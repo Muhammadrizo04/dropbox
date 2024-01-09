@@ -5,9 +5,47 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, FileResponse, Http404
 from django.conf import settings
 from home.models import FileInfo
+from django.contrib.auth.decorators import login_required
 
+def rename_folder(request, folder_path):
+    try:
+        folder_path = folder_path.replace('%slash%', '/')
 
+        # Extract new folder name from the POST data
+        new_folder_name = request.POST.get('new_folder_name')
 
+        # Handle renaming the folder
+        if new_folder_name:
+            original_folder_path = os.path.join(settings.MEDIA_ROOT, folder_path)
+            new_folder_path = os.path.join(os.path.dirname(original_folder_path), new_folder_name)
+            os.rename(original_folder_path, new_folder_path)
+
+        # Redirect back to the referring page (file_manager)
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    except Exception as e:
+        # Handle any errors or exceptions
+        raise Http404
+    
+def rename_file(request, file_path):
+    try:
+        file_path = file_path.replace('%slash%', '/')
+
+        # Extract new filename from the POST data
+        new_filename = request.POST.get('new_filename')
+
+        # Handle renaming the file
+        if new_filename:
+            original_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
+            new_file_path = os.path.join(os.path.dirname(original_file_path), new_filename)
+            os.rename(original_file_path, new_file_path)
+
+        # Redirect back to the referring page (file_manager)
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    except Exception as e:
+        # Handle any errors or exceptions
+        raise Http404   
 
 def delete_folder(request, folder_path):
     folder_path = os.path.join(settings.MEDIA_ROOT, folder_path)
@@ -15,23 +53,19 @@ def delete_folder(request, folder_path):
     try:
         os.rmdir(folder_path)
     except OSError as e:
-        # Handle case when the folder cannot be deleted, for example, if it's not empty
         pass
-
-    # Assuming you want to redirect to the file manager after deleting the folder
     return redirect('file_manager', directory=os.path.dirname(folder_path))
 
 def create_folder(request):
     if request.method == 'POST':
         new_folder_name = request.POST.get('new_folder_name')
-        selected_directory = request.POST.get('selected_directory')  # Add a hidden field in the form to send the current directory
+        selected_directory = request.POST.get('selected_directory') 
         selected_directory_path = os.path.join(settings.MEDIA_ROOT, selected_directory)
         new_folder_path = os.path.join(selected_directory_path, new_folder_name)
 
         try:
             os.mkdir(new_folder_path)
         except FileExistsError:
-            # Handle case when the folder already exists
             pass
 
     return redirect('file_manager', directory=selected_directory)
@@ -98,7 +132,7 @@ def get_breadcrumbs(request):
 
     return breadcrumbs
 
-
+@login_required
 def file_manager(request, directory=''):
     media_path = os.path.join(settings.MEDIA_ROOT)
     directories = generate_nested_directory(media_path, media_path)
@@ -144,7 +178,6 @@ def delete_file(request, file_path):
     absolute_file_path = os.path.join(settings.MEDIA_ROOT, path)
     if os.path.exists(absolute_file_path):
         os.remove(absolute_file_path)
-        # You may want to add additional logic for handling related database entries if needed
         return redirect(request.META.get('HTTP_REFERER'))
     raise Http404
 
