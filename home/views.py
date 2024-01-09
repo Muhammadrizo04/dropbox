@@ -6,6 +6,9 @@ from django.http import HttpResponse, FileResponse, Http404
 from django.conf import settings
 from home.models import FileInfo
 
+
+
+
 def delete_folder(request, folder_path):
     folder_path = os.path.join(settings.MEDIA_ROOT, folder_path)
 
