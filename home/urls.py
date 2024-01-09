@@ -8,6 +8,7 @@ urlpatterns = [
     path('file-manager/', login_required(file_manager), name='file_manager'),
     re_path(r'^file-manager/(?P<directory>.*)?/$', file_manager, name='file_manager'),
     path('delete-file/<str:file_path>/', delete_file, name='delete_file'),
+    path('delete-folder/<str:folder_path>/', delete_folder, name='delete_folder'),
     path('download-file/<str:file_path>/', download_file, name='download_file'),
     path('upload-file/', upload_file, name='upload_file'),
     path('save-info/<str:file_path>/', save_info, name='save_info'),

@@ -6,6 +6,18 @@ from django.http import HttpResponse, FileResponse, Http404
 from django.conf import settings
 from home.models import FileInfo
 
+def delete_folder(request, folder_path):
+    folder_path = os.path.join(settings.MEDIA_ROOT, folder_path)
+
+    try:
+        os.rmdir(folder_path)
+    except OSError as e:
+        # Handle case when the folder cannot be deleted, for example, if it's not empty
+        pass
+
+    # Assuming you want to redirect to the file manager after deleting the folder
+    return redirect('file_manager', directory=os.path.dirname(folder_path))
+
 def create_folder(request):
     if request.method == 'POST':
         new_folder_name = request.POST.get('new_folder_name')
@@ -117,12 +129,21 @@ def generate_nested_directory(root_path, current_path):
     return directories
 
 
+# def delete_file(request, file_path):
+#     path = file_path.replace('%slash%', '/')
+#     absolute_file_path = os.path.join(settings.MEDIA_ROOT, path)
+#     os.remove(absolute_file_path)
+#     print("File deleted", absolute_file_path)
+#     return redirect(request.META.get('HTTP_REFERER'))
+
 def delete_file(request, file_path):
     path = file_path.replace('%slash%', '/')
     absolute_file_path = os.path.join(settings.MEDIA_ROOT, path)
-    os.remove(absolute_file_path)
-    print("File deleted", absolute_file_path)
-    return redirect(request.META.get('HTTP_REFERER'))
+    if os.path.exists(absolute_file_path):
+        os.remove(absolute_file_path)
+        # You may want to add additional logic for handling related database entries if needed
+        return redirect(request.META.get('HTTP_REFERER'))
+    raise Http404
 
    
 def download_file(request, file_path):

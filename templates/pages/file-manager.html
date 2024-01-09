@@ -3,73 +3,85 @@
 
 {% block extrastyle %}
 <style>
-  ul li {
+  ul {
     list-style-type: none;
+    padding: 0;
   }
+
   .dot-separator {
     height: 2px;
     width: 2px;
     background: #000;
     border-radius: 50%;
   }
+
   .actions span {
     cursor: pointer;
   }
+
   .modal {
     z-index: 99999 !important;
   }
+
+  /* Add any additional styling you need */
 </style>
 {% endblock extrastyle %}
 
 {% block content %}
 <div class="container-fluid py-4 px-5">
   <div class="row">
+    <form method="post" action="{% url 'create_folder' %}">
+      {% csrf_token %}
+      <input type="hidden" name="selected_directory" value="{{ selected_directory }}">
+      <label for="new-folder-name">New Folder Name:</label>
+      <input type="text" name="new_folder_name" id="new-folder-name" required>
+      <button style="padding: 3px 1px; display: inline-block; background-color: #1E293B; color: #FFFFFF; border-radius: 7px;" type="submit">Create Folder</button>
+    </form>
+
     <div class="col-lg-3 border py-2">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'file_manager' %}">Home</a></li>
-            {% for breadcrumb in breadcrumbs %}
-                {% if forloop.last %}
-                    <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.name }}</li>
-                {% else %}
-                    {% if breadcrumb.name|lower == 'media' %}
-                        <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.name }}</li>
-                    {% else %}
-                        <li class="breadcrumb-item"><a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a></li>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+          <li class="breadcrumb-item"><a href="{% url 'file_manager' %}">Home</a></li>
+          {% for breadcrumb in breadcrumbs %}
+            {% if forloop.last %}
+              <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.name }}</li>
+            {% else %}
+              {% if breadcrumb.name|lower == 'media' %}
+                <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.name }}</li>
+              {% else %}
+                <li class="breadcrumb-item"><a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a></li>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
         </ol>
-    </nav>  
-      <form method="post" action="{% url 'create_folder' %}">
-        {% csrf_token %}
-        <input type="hidden" name="selected_directory" value="{{ selected_directory }}">
-        <label for="new-folder-name">New Folder Name:</label>
-        <input type="text" name="new_folder_name" id="new-folder-name" required>
-        <button type="submit">Create Folder</button>
-    </form>
+      </nav>  
+      
       <ul class="">
         {% for directory in directories %}
           {% if directory.directories %}
-          <li class="">
-            <i class="fa-solid fa-folder"></i>
-            <a 
-              data-bs-toggle="collapse" 
-              href="#collapse{{directory.id}}" 
-              role="button" 
-              aria-expanded="false"
-              aria-controls="collapse{{directory.id}}"
-              onclick="window.location.href = '{% url 'file_manager' directory.path|encoded_path %}';"
-            >
-              {{ directory.name }}
-            </a>
-          </li>
-          {% include 'includes/subdirectories.html' with directory=directory depth=depth|add:"3" %}
-        {% else %}
-          <li>
-            <i class="fa-solid fa-folder"></i>
-            <a href="{% url 'file_manager' directory.path|encoded_path %}">{{ directory.name }}</a>
-          </li>
+            <li class="">
+              <i class="fa-solid fa-folder"></i>
+              <a 
+                data-bs-toggle="collapse" 
+                href="#collapse{{directory.id}}" 
+                role="button" 
+                aria-expanded="false"
+                aria-controls="collapse{{directory.id}}"
+                onclick="window.location.href = '{% url 'file_manager' directory.path|encoded_path %}';"
+              >
+                {{ directory.name }}
+              </a>
+            </li>
+            {% include 'includes/subdirectories.html' with directory=directory depth=depth|add:"3" %}
+          {% else %}
+            <li>
+              <i class="fa-solid fa-folder"></i>
+              <a href="{% url 'file_manager' directory.path|encoded_path %}">{{ directory.name }}</a>
+              <a style="margin-left: 200px;" href="{% url 'delete_folder' directory.path|encoded_path %}" onclick="return confirm('Are you sure you want to delete this folder?');">
+                <i title="Delete Folder" class="fa-solid fa-trash text-danger"></i>
+              </a>
+            </li>
+            
           {% endif %}
         {% endfor %}
       </ul>
@@ -89,12 +101,15 @@
         {{files|length|json_script:"files-count"}}
         <div class="table-responsive">
           <table class="table">
-            <tr>
-              <th scope="col">File Name</th>
-              <th scope="col">File Type</th>
-              <th scope="col">Actions</th>
-            </tr>
-            {% for file in files %}
+            <thead>
+              <tr>
+                <th scope="col">File Name</th>
+                <th scope="col">File Type</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for file in files %}
             <tr data-bs-toggle="tooltip" title="{{file.file_path|info_value}}">
               <td>
                 <span>
@@ -193,6 +208,7 @@
               </div>
             </div>
             {% endfor %}
+            </tbody>
           </table>
         </div>
       {% else %}
@@ -200,17 +216,15 @@
       {% endif %}
     </div>
   </div>
-
 </div>
 {% endblock content %}
 
 {% block extrascripts %}
-
 <script>
   function submitForm() {
     document.getElementById("upload-file").submit();
   }
-  
+
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' || event.key === 'Esc' || event.key === 27) {
       let files = document.getElementById('files-count').textContent;
@@ -219,7 +233,6 @@
         closeButtonElements.click();
       }
     }
-  })
+  });
 </script>
-
 {% endblock extrascripts %}
