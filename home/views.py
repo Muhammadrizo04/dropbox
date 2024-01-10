@@ -4,7 +4,7 @@ import csv
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, FileResponse, Http404
 from django.conf import settings
-from home.models import FileInfo
+from home.models import FileInfo, UserFolder
 from django.contrib.auth.decorators import login_required
 
 def rename_folder(request, folder_path):
@@ -65,6 +65,7 @@ def create_folder(request):
 
         try:
             os.mkdir(new_folder_path)
+            # UserFolder.save(path=new_folder_path, user=request.user)
         except FileExistsError:
             pass
 
@@ -83,6 +84,7 @@ def convert_csv_to_text(csv_file_path):
 
 
 def get_files_from_directory(directory_path):
+
     files = []
     for filename in os.listdir(directory_path):
         file_path = os.path.join(directory_path, filename)
@@ -93,7 +95,7 @@ def get_files_from_directory(directory_path):
                 if extension.lower() == '.csv':
                     csv_text = convert_csv_to_text(file_path)
                 else:
-                    csv_text = ''
+                    csv_text = str
 
                 files.append({
                     'file': file_path.split(os.sep + 'media' + os.sep)[1],
@@ -134,8 +136,9 @@ def get_breadcrumbs(request):
 
 @login_required
 def file_manager(request, directory=''):
+    user = request.user
     media_path = os.path.join(settings.MEDIA_ROOT)
-    directories = generate_nested_directory(media_path, media_path)
+    directories = generate_nested_directory(media_path, media_path) # UserFolder.objects.filter(user=request.user)
     selected_directory = directory
 
     files = []
@@ -147,7 +150,8 @@ def file_manager(request, directory=''):
 
     context = {
         'directories': directories, 
-        'files': files, 
+        'files': files,
+        "user": user,
         'selected_directory': selected_directory,
         'segment': 'file_manager',
         'breadcrumbs': breadcrumbs

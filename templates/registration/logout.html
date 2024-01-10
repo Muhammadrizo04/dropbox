@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Are you sure logout?</h2>
+  <button type="submit">
+    <a href="#" onclick="document.getElementById('logout-form').submit()">Logout</a>
+  </button>
+  <form id="logout-form" method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+  </form>
+{% endblock %}

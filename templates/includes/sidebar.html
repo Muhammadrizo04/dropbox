@@ -58,24 +58,24 @@
       </li>
       {% if not request.user.is_authenticated %}
       <li class="nav-item border-start my-0 pt-2">
-        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'account_login' %}">
+        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'login' %}">
           <span class="nav-link-text ms-1">Sign In</span>
         </a>
       </li>
       <li class="nav-item border-start my-0 pt-2">
-        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'account_signup' %}">
+        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'signup' %}">
           <span class="nav-link-text ms-1">Sign Up</span>
         </a>
       </li>
       {% endif %}
       {% if request.user.is_superuser %}
       <li class="nav-item border-start my-0 pt-2">
-        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'admin:password_change' %}">
+        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'change_password' %}">
           <span class="nav-link-text ms-1">Change Password</span>
         </a>
       </li>
       <li class="nav-item border-start my-0 pt-2">
-        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'account_logout' %}">
+        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'logout' %}">
           <span class="nav-link-text ms-1">Logout</span>
         </a>
       </li>
@@ -86,12 +86,12 @@
       
 
       <li class="nav-item border-start my-0 pt-2">
-        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'account_login' %}">
+        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'login' %}">
           <span class="nav-link-text ms-1">Sign In</span>
         </a>
       </li>
       <li class="nav-item border-start my-0 pt-2">
-        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'account_signup' %}">
+        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'signup' %}">
           <span class="nav-link-text ms-1">Sign Up</span>
         </a>
       </li>
@@ -100,7 +100,7 @@
         
       </li>
       <li class="nav-item border-start my-0 pt-2">
-        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'account_logout' %}">
+        <a class="nav-link position-relative ms-0 ps-2 py-2 " href="{% url 'logout' %}">
           <span class="nav-link-text ms-1">Logout</span>
         </a>
       </li>

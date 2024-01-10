@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Akkaunt yaratish
+{% endblock title %}
+
+{% block content %}
+
+<form method='post'>
+{% csrf_token %}
+<p>Ism:</p>
+<p>{{ form.first_name}}</p>
+<p>Familiya:</p>
+<p>{{ form.last_name}}</p>
+<p>Foydalanuvchi_nomi:</p>
+<p>{{ form.username}}</p>
+<p>Parol:</p>
+<p>{{ form.password1}}</p>
+<p>Parolni takrorlang:</p>
+<p>{{ form.password2}}</p>
+<button class="btn btn-success">Saqlash</button>
+<p style="color: red;">{{ error }}</p>
+</form>
+{% endblock content %}

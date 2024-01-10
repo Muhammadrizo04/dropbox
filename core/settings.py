@@ -51,9 +51,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'django.contrib.sites',
-    'allauth',
-    'allauth.account',
+    # 'allauth',
+    # 'allauth.account',
     "home",
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -143,7 +144,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = 'account_login'
+LOGOUT_REDIRECT_URL = 'login'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -178,10 +179,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-
-SITE_ID = 1
