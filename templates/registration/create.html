@@ -1,24 +1,38 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Akkaunt yaratish
+Create Account
 {% endblock title %}
 
 {% block content %}
 
-<form method='post'>
-{% csrf_token %}
-<p>Ism:</p>
-<p>{{ form.first_name}}</p>
-<p>Familiya:</p>
-<p>{{ form.last_name}}</p>
-<p>Foydalanuvchi_nomi:</p>
-<p>{{ form.username}}</p>
-<p>Parol:</p>
-<p>{{ form.password1}}</p>
-<p>Parolni takrorlang:</p>
-<p>{{ form.password2}}</p>
-<button class="btn btn-success">Saqlash</button>
-<p style="color: red;">{{ error }}</p>
+<form method="post" action="{% url 'signup' %}">
+    {% csrf_token %}
+    
+    <p>
+        <label for="{{ form.first_name.id_for_label }}">First Name:</label>
+        {{ form.first_name }}
+    </p>
+    <p>
+        <label for="{{ form.last_name.id_for_label }}">Last Name:</label>
+        {{ form.last_name }}
+    </p>
+    <p>
+        <label for="{{ form.username.id_for_label }}">Username:</label>
+        {{ form.username }}
+    </p>
+    <p>
+        <label for="{{ form.password1.id_for_label }}">Password:</label>
+        {{ form.password1 }}
+    </p>
+    <p>
+        <label for="{{ form.password2.id_for_label }}">Password (confirm):</label>
+        {{ form.password2 }}
+    </p>
+    
+    <button class="btn btn-dark" type="submit">Save</button>
 </form>
+
+<p style="color: red;">{{ error }}</p>
+
 {% endblock content %}

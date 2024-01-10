@@ -1,4 +1,4 @@
-import os
+import os, shutil
 import uuid
 import csv
 from django.shortcuts import render, redirect
@@ -11,47 +11,40 @@ def rename_folder(request, folder_path):
     try:
         folder_path = folder_path.replace('%slash%', '/')
 
-        # Extract new folder name from the POST data
         new_folder_name = request.POST.get('new_folder_name')
 
-        # Handle renaming the folder
         if new_folder_name:
-            original_folder_path = os.path.join(settings.MEDIA_ROOT, folder_path)
+            original_folder_path = os.path.join(settings.MEDIA_ROOT, str(request.user.username), folder_path)
             new_folder_path = os.path.join(os.path.dirname(original_folder_path), new_folder_name)
-            os.rename(original_folder_path, new_folder_path)
+            shutil.move(original_folder_path, new_folder_path)
 
-        # Redirect back to the referring page (file_manager)
         return redirect(request.META.get('HTTP_REFERER'))
 
     except Exception as e:
-        # Handle any errors or exceptions
         raise Http404
     
 def rename_file(request, file_path):
     try:
         file_path = file_path.replace('%slash%', '/')
 
-        # Extract new filename from the POST data
         new_filename = request.POST.get('new_filename')
 
-        # Handle renaming the file
         if new_filename:
             original_file_path = os.path.join(settings.MEDIA_ROOT, file_path)
             new_file_path = os.path.join(os.path.dirname(original_file_path), new_filename)
             os.rename(original_file_path, new_file_path)
 
-        # Redirect back to the referring page (file_manager)
         return redirect(request.META.get('HTTP_REFERER'))
 
     except Exception as e:
-        # Handle any errors or exceptions
         raise Http404   
 
 def delete_folder(request, folder_path):
-    folder_path = os.path.join(settings.MEDIA_ROOT, folder_path)
+    folder_path = os.path.join(settings.MEDIA_ROOT, str(request.user.username), folder_path)
+    print(folder_path)
 
     try:
-        os.rmdir(folder_path)
+        shutil.rmtree(folder_path)
     except OSError as e:
         pass
     return redirect('file_manager', directory=os.path.dirname(folder_path))
@@ -65,7 +58,6 @@ def create_folder(request):
 
         try:
             os.mkdir(new_folder_path)
-            # UserFolder.save(path=new_folder_path, user=request.user)
         except FileExistsError:
             pass
 
@@ -138,11 +130,16 @@ def get_breadcrumbs(request):
 def file_manager(request, directory=''):
     user = request.user
     media_path = os.path.join(settings.MEDIA_ROOT)
-    directories = generate_nested_directory(media_path, media_path) # UserFolder.objects.filter(user=request.user)
-    selected_directory = directory
+    user_folder = os.path.join(media_path, str(user.username))
 
+    selected_directory = os.path.join(user_folder, directory)
+    if not selected_directory.startswith(user_folder):
+        selected_directory = user_folder
+
+    directories = generate_nested_directory(user_folder, user_folder)
+    
     files = []
-    selected_directory_path = os.path.join(media_path, selected_directory)
+    selected_directory_path = os.path.join(user_folder, directory)
     if os.path.isdir(selected_directory_path):
         files = get_files_from_directory(selected_directory_path)
 
@@ -152,11 +149,12 @@ def file_manager(request, directory=''):
         'directories': directories, 
         'files': files,
         "user": user,
-        'selected_directory': selected_directory,
+        'selected_directory': os.path.relpath(selected_directory, media_path),
         'segment': 'file_manager',
         'breadcrumbs': breadcrumbs
     }
     return render(request, 'pages/file-manager.html', context)
+
 
 
 def generate_nested_directory(root_path, current_path):

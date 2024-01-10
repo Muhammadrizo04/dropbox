@@ -1,5 +1,6 @@
 from contextlib import redirect_stderr
 from distutils.log import error
+import os
 from .forms import UserRegisterForm,LoginForm, ChangePasswordForm
 from django.shortcuts import render,redirect
 from django.http import HttpResponseRedirect
@@ -49,8 +50,13 @@ def user_create_view(request):
             cd = form.cleaned_data
             new_user = form.save(commit = False)
             if cd['password2']:
-                new_user.set_password( cd['password2'])
+                new_user.set_password(cd['password2'])
                 new_user.save()
+
+                user_folder_path = os.path.join('media', new_user.username)
+                os.makedirs(user_folder_path, exist_ok=True)
+
+                login(request, new_user)
                 return redirect('login')
             else:
                 error = 'The passwords are not the same!!!'

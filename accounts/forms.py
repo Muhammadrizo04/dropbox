@@ -16,15 +16,15 @@ class UserRegisterForm(forms.ModelForm):
         model = User
         fields = ('first_name','last_name','username')
         widget = { 'first_name':forms.TextInput(attrs={
-                'placeholder':'Ism',
+                'placeholder':'Name',
                 'class':"form-control w-50"
             }),
             'last_name':forms.TextInput(attrs={
-                'placeholder':'Familya',
+                'placeholder':'LastName',
                 'class':"form-control w-50"
             }),
             'username':forms.TextInput(attrs={
-                'placeholder':'Foydalanuvchi ismi',
+                'placeholder':'Username',
                 'class':"form-control w-50"
             }),
         }
