@@ -4,7 +4,7 @@
 
 [comment]: <> (</p>)
 
-# PROJECT : DROPBOX
+# PROJECT: DROPBOX
 
 ![python](https://img.shields.io/badge/-python-grey?style=for-the-badge&logo=python&logoColor=white&labelColor=306998)
 ![django](https://img.shields.io/badge/-django-grey?style=for-the-badge&logo=django&logoColor=white&labelColor=092e20)
