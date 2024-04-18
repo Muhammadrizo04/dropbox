@@ -41,7 +41,7 @@ class File(BaseModel):
         return self.name
 
     def move(self):
-        old_file_path = self.file.path  # Use self.file.path to get the local filesystem path
+        old_file_path = self.file.path
         if os.path.exists(old_file_path):
             new_file_path = os.path.join(self.folder.get_folder_path(), self.name)
             os.rename(old_file_path, new_file_path)
