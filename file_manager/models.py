@@ -33,9 +33,25 @@ class Folder(BaseModel):
 
 class File(BaseModel):
     name = models.CharField(max_length=255)
-    file = models.FileField(upload_to='uploads/')
+    file = models.FileField(upload_to='temp/', null=True, blank=True)
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return self.name
+
+    def move(self):
+        old_file_path = self.file.path  # Use self.file.path to get the local filesystem path
+        if os.path.exists(old_file_path):
+            new_file_path = os.path.join(self.folder.get_folder_path(), self.name)
+            os.rename(old_file_path, new_file_path)
+
+            print(f"File '{self.name}' moved to '{new_file_path}'")
+
+            if os.path.exists(old_file_path):
+                os.remove(old_file_path)
+                print("Old file removed")
+            else:
+                print("Old file does not exist")
+        else:
+            print(f"File '{old_file_path}' does not exist")

@@ -4,7 +4,6 @@ from .models import Folder, File
 
 class ReadOnlyAdminMixin:
     """Mixin to make admin view read-only"""
-
     def has_add_permission(self, request):
         return False
 
