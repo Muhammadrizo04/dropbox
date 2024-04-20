@@ -28,10 +28,10 @@ h2 {
 
 .form-control {
     width: 100%;
-    padding: 8px 10px;  /* Adjusted padding to reduce height */
+    padding: 8px 10px;  
     border-radius: 5px;
     border: 1px solid #ddd;
-    box-sizing: border-box; /* Ensures padding does not add to the width */
+    box-sizing: border-box; 
 }
 
 .form-button {
