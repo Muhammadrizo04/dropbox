@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<style>
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    color: #333;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-left: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #5C67F2;
+}
+
+nav a:hover {
+    color: #5058E5;
+}
+
+.main-content {
+    padding: 20px 0;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+</style>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Welcome to Your File Manager, {{ user.username }}!</h1>
+            <nav>
+                <ul>
+                    <form action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">Logout</button>
+                    </form>
+                    <!-- Add more navigation links as needed -->
+                </ul>
+            </nav>
+        </header>
+        <main class="main-content">
+            <p>This is your dashboard where you can manage your files and folders.</p>
+            <!-- Content and links to different parts of the application can be added here -->
+        </main>
+        <footer class="footer">
+            <p>Thank you for using our service.</p>
+        </footer>
+    </div>
+</body>
+</html>

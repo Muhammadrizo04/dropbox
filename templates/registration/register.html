@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="form-container">
+        <form action="" method="post">
+            <h2>Register</h2>
+            {% if form.errors %}
+                <p class="error">Please correct the errors below.</p>
+            {% endif %}
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email" required class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="username" placeholder="Username" required class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="password" name="password1" placeholder="Password" required class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="password" name="password2" placeholder="Confirm Password" required class="form-control">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="form-button">Register</button>
+                <a type="button" href='{% url 'login' %}'">Sign In</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
