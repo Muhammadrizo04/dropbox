@@ -27,6 +27,38 @@ class Folder(BaseModel):
         if not os.path.exists(user_folder):
             os.makedirs(user_folder)
 
+    def get_folder_structure(self):
+        """
+        Recursively builds the folder structure starting from the current folder.
+        Returns a dictionary representing the folder structure in JSON-like format.
+        """
+        folder_structure = {
+            'folder': self.name,
+            'subfolders': self.get_subfolders_structure(),
+            'files': self.get_files()
+        }
+
+        return folder_structure
+
+    def get_subfolders_structure(self):
+        """
+        Recursively builds the subfolder structure starting from the current folder.
+        Returns a dictionary representing the subfolder structure in JSON-like format.
+        """
+        subfolder_structure = {}
+        subfolders = self.folder_set.all()
+        for folder in subfolders:
+            subfolder_structure[folder.name] = folder.get_folder_structure()
+        return subfolder_structure
+
+    def get_files(self):
+        """
+        Retrieves files associated with the current folder.
+        Returns a list of file names.
+        """
+        files = self.file_set.all()
+        return [file.name for file in files]
+
     def __str__(self) -> str:
         return self.name
 
