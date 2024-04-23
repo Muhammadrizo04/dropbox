@@ -1,0 +1,21 @@
+<div class="file-item">
+    <div class="file-item-select-bg bg-primary"></div>
+    <!-- Display folder icon -->
+    <a href="{{ folder.get_absolute_url }}">
+        <div class="file-item-icon far fa-folder text-secondary"></div>
+        <!-- Display folder name -->
+        <a href="{{ folder.get_absolute_url }}" class="file-item-name">{{ folder.name }}</a>
+        <!-- Display last changed date -->
+        <div class="file-item-changed">{{ folder.updated_at|date:"m/d/Y" }}</div>
+    </a>
+    <!-- Action buttons -->
+    <div class="file-item-actions btn-group">
+        <button type="button"
+                class="btn btn-default btn-sm rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle"
+                data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="javascript:void(0)">Rename</a>
+            <a class="dropdown-item" href="javascript:void(0)">Remove</a>
+        </div>
+    </div>
+</div>

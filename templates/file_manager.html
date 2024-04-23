@@ -29,9 +29,17 @@
     <div class="container-m-nx container-m-ny bg-lightest mb-3">
         <ol class="breadcrumb text-big container-p-x py-3 m-0">
             <li class="breadcrumb-item">
-                <a href="javascript:void(0)">{{ request.user }}</a>
+                <a href="{% url 'index' %}">{{ request.user }}</a>
             </li>
+            {% for ancestor in folder.get_ancestors %}
+                <li class="breadcrumb-item">
+                    <a href="{{ ancestor.get_absolute_url }}">{{ ancestor.name }}</a>
+                </li>
+            {% endfor %}
+            <li class="breadcrumb-item active">{{ folder.name }}</li>
         </ol>
+
+
         <hr class="m-0"/>
         <div class="file-manager-actions container-p-x py-2">
             <div>
@@ -69,62 +77,43 @@
             <div class="file-item-name pb-2">Filename</div>
             <div class="file-item-changed pb-2">Changed</div>
         </div>
-
-        <!-- Loop through user folders -->
-        {% for folder in user_folders %}
+        {% if folder_item.parent_folder or folder.parent_folder %}
             <div class="file-item">
                 <div class="file-item-select-bg bg-primary"></div>
                 <!-- Display folder icon -->
-                <div class="file-item-icon far fa-folder text-secondary"></div>
-                <!-- Display folder name -->
-                <a href="javascript:void(0)" class="file-item-name">{{ folder.name }}</a>
-                <!-- Display last changed date -->
-                <div class="file-item-changed">{{ folder.updated_at|date:"m/d/Y" }}</div>
-                <!-- Action buttons -->
-                <div class="file-item-actions btn-group">
-                    <button type="button"
-                            class="btn btn-default btn-sm rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle"
-                            data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="javascript:void(0)">Rename</a>
-                        <a class="dropdown-item" href="javascript:void(0)">Move</a>
-                        <a class="dropdown-item" href="javascript:void(0)">Copy</a>
-                        <a class="dropdown-item" href="javascript:void(0)">Remove</a>
-                    </div>
-                </div>
+                {% if folder_item.get_parent_folder_url %}
+                    <a href="{{ folder_item.get_parent_folder_url }}">
+                        <div class="file-item-icon far fa-folder text-secondary"></div>
+                        <!-- Display folder name -->
+                        <a href="{{ folder_item.get_parent_folder_url }}" class="file-item-name">Back</a>
+                        <!-- Display last changed date -->
+                        <div class="file-item-changed">{{ folder.updated_at|date:"m/d/Y" }}</div>
+                    </a>
+                {% else %}
+                    <a href="{% url 'index' %}">
+                        <div class="file-item-icon far fa-folder text-secondary"></div>
+                        <!-- Display folder name -->
+                        <a href="{% url 'index' %}" class="file-item-name">Back</a>
+                        <!-- Display last changed date -->
+                        <div class="file-item-changed">{{ folder.updated_at|date:"m/d/Y" }}</div>
+                    </a>
+                {% endif %}
             </div>
+        {% endif %}
+        <!-- Include user folders -->
+        {% for folder in user_folders %}
+            {% include 'folder_item.html' %}
         {% endfor %}
 
-        <!-- Loop through user files -->
+        <!-- Include user files -->
         {% for file in user_files %}
-            <div class="file-item">
-                <div class="file-item-select-bg bg-primary"></div>
-                <!-- Display file icon based on file type -->
-                <div class="file-item-icon far fa-file text-secondary"></div>
-                <!-- Display file name -->
-                <a href="javascript:void(0)" class="file-item-name">{{ file.name }}</a>
-                <!-- Display last changed date -->
-                <div class="file-item-changed">{{ file.updated_at|date:"m/d/Y" }}</div>
-                <!-- Action buttons -->
-                <div class="file-item-actions btn-group">
-                    <button type="button"
-                            class="btn btn-default btn-sm rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle"
-                            data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="javascript:void(0)">Rename</a>
-                        <a class="dropdown-item" href="javascript:void(0)">Move</a>
-                        <a class="dropdown-item" href="javascript:void(0)">Copy</a>
-                        <a class="dropdown-item" href="javascript:void(0)">Remove</a>
-                    </div>
-                </div>
-            </div>
+            {% include 'file_item.html' %}
         {% endfor %}
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript">
-
-</script>
+<script type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 </html>

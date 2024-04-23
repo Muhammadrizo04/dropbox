@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import login as auth_login, authenticate
 from django.urls import reverse
 
@@ -10,18 +10,33 @@ from django.contrib.auth import logout
 from .models import Folder, File
 
 
+def login_required_decorator(view_func):
+    return login_required(view_func, login_url='login')
+
+
 @login_required
-def index_view(request):
-    user_folders = Folder.objects.filter(owner=request.user)
-    user_files = File.objects.filter(owner=request.user)
+def file_manager(request, guid=None):
+    if guid:
+        folder = get_object_or_404(Folder, guid=guid)
+        folders = folder.get_subfolders()
+        user_files = File.objects.filter(folder=folder)
+    else:
+        user_folders = Folder.objects.filter(owner=request.user, parent_folder=None)
+        user_files = File.objects.filter(folder__parent_folder=None)
+        print(user_folders)
+        return render(request, 'file_manager.html', {
+            'user': request.user,
+            'user_folders': user_folders,
+            'user_files': user_files,
+        })
 
-    context = {
+    return render(request, 'file_manager.html', {
         'user': request.user,
-        'user_folders': user_folders,
+        'user_folders': folders,
         'user_files': user_files,
-    }
-
-    return render(request, 'file_manager.html', context)
+        'folder_item': folder,
+        'folder': folders.first(),
+    })
 
 
 def login_view(request):
