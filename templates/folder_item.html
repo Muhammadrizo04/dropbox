@@ -4,18 +4,67 @@
     <a href="{{ folder.get_absolute_url }}">
         <div class="file-item-icon far fa-folder text-secondary"></div>
         <!-- Display folder name -->
-        <a href="{{ folder.get_absolute_url }}" class="file-item-name">{{ folder.name }}</a>
+        <span class="file-item-name">{{ folder.name }}</span>
         <!-- Display last changed date -->
         <div class="file-item-changed">{{ folder.updated_at|date:"m/d/Y" }}</div>
     </a>
     <!-- Action buttons -->
     <div class="file-item-actions btn-group">
         <button type="button"
-                class="btn btn-default btn-sm rounded-pill icon-btn borderless md-btn-flat hide-arrow dropdown-toggle"
-                data-toggle="dropdown"><i class="ion ion-ios-more"></i></button>
-        <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="javascript:void(0)">Rename</a>
-            <a class="dropdown-item" href="javascript:void(0)">Remove</a>
+                class="btn btn-default btn-sm rounded-pill icon-btn borderless md-btn-flat hide-arrow"
+                data-toggle="modal" data-target="#renameFolderModal"><i class="ion ion-ios-create"></i></button>
+        <button type="button" class="btn btn-default btn-sm rounded-pill icon-btn borderless md-btn-flat hide-arrow"
+                data-toggle="modal" data-target="#removeFolderModal"><i class="ion ion-ios-trash"></i></button>
+    </div>
+</div>
+
+<!-- Rename Folder Modal -->
+<div class="modal fade" id="renameFolderModal" tabindex="-1" role="dialog" aria-labelledby="renameFolderModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'rename_folder' folder.guid %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="renameFolderModalLabel">Rename Folder</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new_name">New Folder Name</label>
+                        <input type="text" id="new_name" name="new_name" class="form-control"
+                               placeholder="New Folder Name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Rename</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Folder Modal -->
+<div class="modal fade" id="removeFolderModal" tabindex="-1" role="dialog" aria-labelledby="removeFolderModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeFolderModalLabel">Remove Folder</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to remove the folder "{{ folder.name }}"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <a href="{% url 'remove_folder' folder.guid %}" class="btn btn-danger">Yes</a>
+            </div>
         </div>
     </div>
 </div>

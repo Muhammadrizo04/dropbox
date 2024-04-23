@@ -1,5 +1,6 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseNotAllowed
 from django.contrib.auth import login as auth_login, authenticate
 from django.urls import reverse
 
@@ -23,15 +24,14 @@ def file_manager(request, guid=None):
     else:
         user_folders = Folder.objects.filter(owner=request.user, parent_folder=None)
         user_files = File.objects.filter(folder__parent_folder=None)
-        print(user_folders)
         return render(request, 'file_manager.html', {
             'user': request.user,
             'user_folders': user_folders,
             'user_files': user_files,
         })
-
     return render(request, 'file_manager.html', {
         'user': request.user,
+        'parent_folders': folder.get_all_parent_folders(),
         'user_folders': folders,
         'user_files': user_files,
         'folder_item': folder,
@@ -81,15 +81,55 @@ def logout_view(request):
 
 
 def create_folder(request):
-    pass
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        parent_folder_id = request.POST.get('parent_folder_id')
+        print(parent_folder_id)
+
+        if name:
+            # Retrieve the parent folder if its ID is provided
+            parent_folder = None
+            if parent_folder_id:
+                parent_folder = Folder.objects.filter(pk=parent_folder_id).first()
+                print(parent_folder)
+            folder = Folder.create_folder(name=name, owner=request.user, parent_folder=parent_folder)
+            messages.success(request, 'Folder created successfully.')
+            return redirect('index')  # Redirect to the appropriate page after creating the folder
+        else:
+            messages.error(request, 'Folder name is required.')
 
 
-def rename_folder(request):
-    pass
+def rename_folder(request, guid):
+    folder = get_object_or_404(Folder, guid=guid)
+
+    if request.method == 'POST':
+        new_name = request.POST.get('new_name')
+        if new_name:
+            if folder.rename_folder(new_name):
+                messages.success(request, 'Folder renamed successfully.')
+            else:
+                messages.error(request, 'Failed to rename folder.')
+            try:
+                return redirect('open_folder', guid=folder.parent_folder.guid)
+            except AttributeError:
+                return redirect('index')
 
 
-def delete_folder(request):
-    pass
+def delete_folder(request, guid):
+    if request.method == 'GET':
+        folder = get_object_or_404(Folder, guid=guid)
+        try:
+            folder.delete_folder()
+            messages.success(request, 'Folder and its subfolders deleted successfully.')
+            if folder.parent_folder:
+                return redirect('delete_folder', guid=folder.parent_folder.guid)
+            else:
+                return redirect('open_folder', guid=folder.parent_folder.guid)
+        except Exception as e:
+            messages.error(request, f'Failed to delete folder: {str(e)}')
+            return redirect('index')  # Redirect to index page on error
+    else:
+        return HttpResponseNotAllowed(['POST'])
 
 
 def upload_file(request):
